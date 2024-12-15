@@ -6,5 +6,5 @@ mongo_uri = os.getenv("MONGO_URI", "mongodb+srv://bhilareaditi24:<db_password>@a
 client = MongoClient(mongo_uri)
 
 # Connect to your database
-db = client["todo_app"]
+db = client["AditiB"]
 todos_collection = db["todos"]
