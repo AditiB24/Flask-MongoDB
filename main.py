@@ -4,10 +4,37 @@ import random
 
 app = Flask(__name__)
 
-# MongoDB setup
-client = MongoClient('mongodb+srv://bhilareaditi24:bhilareaditi24@aditib.qs572.mongodb.net/?retryWrites=true&w=majority&appName=AditiB')
-db = client.AditiB
-todos_collection = db.todos
+# # MongoDB setup
+# client = MongoClient('mongodb+srv://bhilareaditi24:bhilareaditi24@aditib.qs572.mongodb.net/?retryWrites=true&w=majority&appName=AditiB')
+# db = client.AditiB
+# todos_collection = db.todos
+
+import psycopg2
+import os
+
+# Get PostgreSQL URI from environment variables (as a security best practice)
+DATABASE_URL = os.getenv('postgresql://dim_v4xu_user:27vlIxoz9ed6C7JPeS5IXE5E47tvV78t@dpg-ctfgso56l47c73b8lm80-a.oregon-postgres.render.com/dim_v4xu')
+
+# Connect to your PostgreSQL database
+conn = psycopg2.connect(DATABASE_URL)
+
+# Create a cursor object to interact with the database
+cursor = conn.cursor()
+
+# Example: Creating a table (if needed)
+cursor.execute('''CREATE TABLE IF NOT EXISTS todos (
+                    id SERIAL PRIMARY KEY,
+                    title VARCHAR(100),
+                    completed BOOLEAN
+                  );''')
+
+# Commit the transaction
+conn.commit()
+
+# Close the cursor and connection
+cursor.close()
+conn.close()
+
 
 @app.route("/", methods=["GET", "POST"])
 @app.route("/home", methods=["GET", "POST"])
