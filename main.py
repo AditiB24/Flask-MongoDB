@@ -86,5 +86,13 @@ def edit_todo(todo_id):
     task = todos_collection.find_one({'id': todo_id})
     return render_template("edit.html", task=task)
 
+# app.py
+from db import create_todo, get_todos
+
+# Example of using CRUD operations
+create_todo('Buy Milk', False)
+todos = get_todos()
+print(todos)
+
 if __name__ == "__main__":
     app.run(debug=True)
