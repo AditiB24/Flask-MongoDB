@@ -1,7 +1,4 @@
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 class Config:
-    MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/todo_app")
+    DATABASE_URL = os.getenv('postgresql://new_project_8fzg_user:LJke8zkvYQYdLnkVuhoBEfxMDQ8dNshG@dpg-ctfrlvt2ng1s738mfcag-a.singapore-postgres.render.com/new_project_8fzg')
