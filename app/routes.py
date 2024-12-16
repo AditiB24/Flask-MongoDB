@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for
+from flask import Blueprint, request, jsonify, render_template
 from app.models import create_todo, get_todos, update_task, delete_task, delete_all_tasks
 
 todo_bp = Blueprint('todo_bp', __name__)
@@ -17,16 +17,21 @@ def add_task():
     task_name = request.form.get('todo_name')
     
     if not task_name:
-        return redirect(url_for('todo_bp.home'))  # Redirect back if no task name
+        return jsonify({"error": "Task name is required"}), 400
     
-    # Insert the new task into PostgreSQL using psycopg2
+    # Insert the new task into PostgreSQL (or MongoDB)
     create_todo(task_name, False)  # 'False' for completed as default
-    return redirect(url_for('todo_bp.home'))  # Redirect to the home page after adding
+    
+    # Fetch all tasks again to return updated task list
+    tasks = get_todos()
+    task_list = [{'id': task[0], 'name': task[1], 'checked': task[2]} for task in tasks]
+    
+    return jsonify({"tasks": task_list})  # Return updated tasks in JSON format
 
 # Route to Mark a Task as Checked (Completed)
 @todo_bp.route('/checked/<int:task_id>', methods=['POST'])
 def check_task(task_id):
-    # You should implement a function to mark a task as completed in your database
+    # Update the task completion status in your database
     task = get_todos()  # Assuming this function gets all tasks, you need to implement the logic for updating completion status.
     update_task(task_id, task[0][1])  # Example: This might require changing logic
     return redirect(url_for('todo_bp.home'))
