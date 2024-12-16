@@ -4,6 +4,17 @@ import os
 # Fetch the PostgreSQL URL from the environment
 # DATABASE_URL = os.getenv('postgresql://new_project_8fzg_user:LJke8zkvYQYdLnkVuhoBEfxMDQ8dNshG@dpg-ctfrlvt2ng1s738mfcag-a.singapore-postgres.render.com/new_project_8fzg')
 DATABASE_URL = os.getenv('DATABASE_URL')
+
+# Database connection function
+def get_db():
+    conn = psycopg2.connect(
+        dbname="new_project_8fzg", 
+        user="new_project_8fzg_user", 
+        password="LJke8zkvYQYdLnkVuhoBEfxMDQ8dNshG", 
+        host="dpg-ctfrlvt2ng1s738mfcag-a", 
+        port="5432"
+    )
+    return conn
 # Function to create a new task (insert into the database)
 def create_todo(title, completed):
     conn = psycopg2.connect(DATABASE_URL)
