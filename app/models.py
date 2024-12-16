@@ -11,7 +11,7 @@
 import psycopg2
 import os
 
-DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASE_URL = os.getenv('postgresql://new_project_8fzg_user:LJke8zkvYQYdLnkVuhoBEfxMDQ8dNshG@dpg-ctfrlvt2ng1s738mfcag-a/new_project_8fzg')
 
 def create_todo(title, completed):
     conn = psycopg2.connect(DATABASE_URL)
