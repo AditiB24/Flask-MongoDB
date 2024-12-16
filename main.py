@@ -10,7 +10,7 @@ load_dotenv()
 app = Flask(__name__)
 
 # PostgreSQL connection setup
-DATABASE_URL = os.getenv('postgresql://new_project_8fzg_user:LJke8zkvYQYdLnkVuhoBEfxMDQ8dNshG@dpg-ctfrlvt2ng1s738mfcag-a/new_project_8fzg')
+DATABASE_URL = os.getenv('DATABASE_URL')
 
 # Ensure the database table exists
 def init_db():
