@@ -1,18 +1,10 @@
-# import os
-# from pymongo import MongoClient
-
-# # Fetch MongoDB URI from environment variables or use localhost as fallback
-# mongo_uri = os.getenv("MONGO_URI", "mongodb+srv://bhilareaditi24:bhilareaditi24@aditib.qs572.mongodb.net/?retryWrites=true&w=majority&appName=AditiB")
-# client = MongoClient(mongo_uri)
-
-# # Connect to your database
-# db = client["AditiB"]
-# todos_collection = db["todos"]
 import psycopg2
 import os
 
-DATABASE_URL = os.getenv('postgresql://new_project_8fzg_user:LJke8zkvYQYdLnkVuhoBEfxMDQ8dNshG@dpg-ctfrlvt2ng1s738mfcag-a/new_project_8fzg')
+# Fetch the PostgreSQL URL from the environment
+DATABASE_URL = os.getenv('postgresql://new_project_8fzg_user:LJke8zkvYQYdLnkVuhoBEfxMDQ8dNshG@dpg-ctfrlvt2ng1s738mfcag-a.singapore-postgres.render.com/new_project_8fzg')
 
+# Function to create a new task (insert into the database)
 def create_todo(title, completed):
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
@@ -21,6 +13,7 @@ def create_todo(title, completed):
     cursor.close()
     conn.close()
 
+# Function to retrieve all tasks
 def get_todos():
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
@@ -30,6 +23,29 @@ def get_todos():
     conn.close()
     return todos
 
+# Function to update a task by ID
+def update_task(task_id, title):
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE todos SET title = %s WHERE id = %s", (title, task_id))
+    conn.commit()
+    cursor.close()
+    conn.close()
 
+# Function to delete a task by ID
+def delete_task(task_id):
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM todos WHERE id = %s", (task_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
 
-
+# Function to delete all tasks
+def delete_all_tasks():
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM todos")
+    conn.commit()
+    cursor.close()
+    conn.close()
