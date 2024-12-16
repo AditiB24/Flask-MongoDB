@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To-Do List</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 
@@ -12,13 +13,13 @@
         <h1>To-Do List</h1>
         
         <!-- Form to Add New Task -->
-        <form method="POST" action="/home">
+        <form id="add-task-form">
             <input type="text" name="todo_name" placeholder="Enter task" required>
             <button type="submit">Add Task</button>
         </form>
 
         <!-- List of Tasks -->
-        <ul>
+        <ul id="task-list">
             {% for item in items %}
                 <li class="{{ 'completed' if item['checked'] else '' }}">
                     <form action="/checked/{{ item['id'] }}" method="POST" style="display:inline;">
@@ -34,5 +35,69 @@
         </ul>
     </div>
 
+    <script>
+        $(document).ready(function() {
+            // Add Task using AJAX
+            $('#add-task-form').on('submit', function(event) {
+                event.preventDefault();
+                var taskName = $('input[name="todo_name"]').val();
+
+                $.ajax({
+                    url: '/home',  // Route to add task
+                    type: 'POST',
+                    data: { todo_name: taskName },
+                    success: function(response) {
+                        // Append the new task to the task list dynamically
+                        $('#task-list').append('<li>' + taskName + '</li>');
+                        $('input[name="todo_name"]').val('');  // Clear input field
+                    },
+                    error: function() {
+                        alert('Error adding task');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <h1>To-Do List</h1>
+        
+        <!-- Form to Add New Task -->
+<!--         <form method="POST" action="/home">
+            <input type="text" name="todo_name" placeholder="Enter task" required>
+            <button type="submit">Add Task</button>
+        </form>
+
+        <!-- List of Tasks -->
+<!--         <ul>
+            {% for item in items %}
+                <li class="{{ 'completed' if item['checked'] else '' }}">
+                    <form action="/checked/{{ item['id'] }}" method="POST" style="display:inline;">
+                        <input type="checkbox" onclick="this.form.submit()" {% if item['checked'] %}checked{% endif %}>
+                    </form>
+                    {{ item['name'] }}
+                    <a href="/edit/{{ item['id'] }}" class="edit-btn">Edit</a>
+                    <form action="/delete/{{ item['id'] }}" method="POST" style="display:inline;">
+                        <button type="submit" class="delete-btn">Delete</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul> -->
+    </div>
+ -->
+</body>
+</html>
+ -->
