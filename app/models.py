@@ -2,8 +2,8 @@ import psycopg2
 import os
 
 # Fetch the PostgreSQL URL from the environment
-DATABASE_URL = os.getenv('postgresql://new_project_8fzg_user:LJke8zkvYQYdLnkVuhoBEfxMDQ8dNshG@dpg-ctfrlvt2ng1s738mfcag-a.singapore-postgres.render.com/new_project_8fzg')
-
+# DATABASE_URL = os.getenv('postgresql://new_project_8fzg_user:LJke8zkvYQYdLnkVuhoBEfxMDQ8dNshG@dpg-ctfrlvt2ng1s738mfcag-a.singapore-postgres.render.com/new_project_8fzg')
+DATABASE_URL = os.getenv('DATABASE_URL')
 # Function to create a new task (insert into the database)
 def create_todo(title, completed):
     conn = psycopg2.connect(DATABASE_URL)
