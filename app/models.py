@@ -30,9 +30,6 @@ def get_todos():
     conn.close()
     return todos
 
-# Example usage
-create_todo('Buy Milk', False)
-todos = get_todos()
-print(todos)
+
 
 
