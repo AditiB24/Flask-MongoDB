@@ -11,7 +11,7 @@
 
     <div class="container">
         <h1>To-Do List</h1>
-        
+
         <!-- Form to Add New Task -->
         <form id="add-task-form">
             <input type="text" name="todo_name" placeholder="Enter task" required>
@@ -21,133 +21,57 @@
         <!-- List of Tasks -->
         <ul id="task-list">
             {% for item in items %}
-                <li class="{{ 'completed' if item['checked'] else '' }}">
-                    <form action="/checked/{{ item['id'] }}" method="POST" style="display:inline;">
-                        <input type="checkbox" onclick="this.form.submit()" {% if item['checked'] %}checked{% endif %}>
-                    </form>
+                <li>
                     {{ item['name'] }}
-                    <a href="/edit/{{ item['id'] }}" class="edit-btn">Edit</a>
-                    <form action="/delete/{{ item['id'] }}" method="POST" style="display:inline;">
-                        <button type="submit" class="delete-btn">Delete</button>
-                    </form>
                 </li>
             {% endfor %}
         </ul>
     </div>
-    
-<script>
-    $(document).ready(function() {
-        // Handle form submission for adding a task
-        $('#add-task-form').on('submit', function(event) {
-            event.preventDefault();  // Prevent the form from submitting normally
-            var taskName = $('input[name="todo_name"]').val();  // Get the task name
 
-            if (taskName.trim() === '') {
-                alert('Task name cannot be empty');
-                return;  // Do not proceed if the input is empty
-            }
-
-            // Send data using AJAX
-            $.ajax({
-                url: '/home',  // The route to add the task
-                type: 'POST',
-                data: { todo_name: taskName },  // Send task name as form data
-                success: function(response) {
-                    if (response.error) {
-                        alert(response.error);  // Display any error returned from Flask
-                    } else {
-                        // Clear the input field after adding the task
-                        $('input[name="todo_name"]').val('');
-                        
-                        // Dynamically update the task list on the page
-                        let taskList = response.tasks;  // Updated tasks list from the response
-                        $('#task-list').empty();  // Clear existing tasks
-                        taskList.forEach(function(task) {
-                            $('#task-list').append(`
-                                <li class="${task.checked ? 'completed' : ''}">
-                                    <form action="/checked/${task.id}" method="POST" style="display:inline;">
-                                        <input type="checkbox" onclick="this.form.submit()" ${task.checked ? 'checked' : ''}>
-                                    </form>
-                                    ${task.name}
-                                    <a href="/edit/${task.id}" class="edit-btn">Edit</a>
-                                    <form action="/delete/${task.id}" method="POST" style="display:inline;">
-                                        <button type="submit" class="delete-btn">Delete</button>
-                                    </form>
-                                </li>
-                            `);
-                        });
-                    }
-                },
-                error: function(xhr, status, error) {
-                    alert('Error adding task: ' + error);  // Show error message if request fails
-                }
-            });
-        });
-    });
-</script>
-
-<!--     <script>
+    <script>
         $(document).ready(function() {
-            // Add Task using AJAX
+            // Handle form submission for adding a task
             $('#add-task-form').on('submit', function(event) {
-                event.preventDefault();
-                var taskName = $('input[name="todo_name"]').val();
+                event.preventDefault();  // Prevent normal form submission
 
+                var taskName = $('input[name="todo_name"]').val();  // Get the task name from input
+
+                if (taskName.trim() === '') {
+                    alert('Task name cannot be empty');
+                    return;  // Don't proceed if task name is empty
+                }
+
+                // Send the task name using AJAX
                 $.ajax({
-                    url: '/home',  // Route to add task
+                    url: '/home',  // The route to add the task
                     type: 'POST',
-                    data: { todo_name: taskName },
+                    data: { todo_name: taskName },  // Send task name as form data
                     success: function(response) {
-                        // Append the new task to the task list dynamically
-                        $('#task-list').append('<li>' + taskName + '</li>');
-                        $('input[name="todo_name"]').val('');  // Clear input field
+                        if (response.error) {
+                            alert(response.error);  // Display any error returned from Flask
+                        } else {
+                            // Clear the input field after adding the task
+                            $('input[name="todo_name"]').val('');
+
+                            // Dynamically update the task list on the page
+                            let taskList = response.tasks;  // Updated tasks list from the response
+                            $('#task-list').empty();  // Clear existing tasks
+                            taskList.forEach(function(task) {
+                                $('#task-list').append(`
+                                    <li>
+                                        ${task.name}
+                                    </li>
+                                `);
+                            });
+                        }
                     },
-                    error: function() {
-                        alert('Error adding task');
+                    error: function(xhr, status, error) {
+                        alert('Error adding task: ' + error);  // Show error message if request fails
                     }
                 });
             });
         });
-    </script> -->
+    </script>
+
 </body>
 </html>
-
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-
-    <div class="container">
-        <h1>To-Do List</h1>
-        
-        <!-- Form to Add New Task -->
-<!--         <form method="POST" action="/home">
-            <input type="text" name="todo_name" placeholder="Enter task" required>
-            <button type="submit">Add Task</button>
-        </form>
-
-        <!-- List of Tasks -->
-<!--         <ul>
-            {% for item in items %}
-                <li class="{{ 'completed' if item['checked'] else '' }}">
-                    <form action="/checked/{{ item['id'] }}" method="POST" style="display:inline;">
-                        <input type="checkbox" onclick="this.form.submit()" {% if item['checked'] %}checked{% endif %}>
-                    </form>
-                    {{ item['name'] }}
-                    <a href="/edit/{{ item['id'] }}" class="edit-btn">Edit</a>
-                    <form action="/delete/{{ item['id'] }}" method="POST" style="display:inline;">
-                        <button type="submit" class="delete-btn">Delete</button>
-                    </form>
-                </li>
-            {% endfor %}
-        </ul> -->
-<!--     </div>
- -->
-<!-- </body>
-</html> -->
