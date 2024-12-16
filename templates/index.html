@@ -34,44 +34,52 @@
             {% endfor %}
         </ul>
     </div>
+    
 <script>
     $(document).ready(function() {
-        // Add Task using AJAX
+        // Handle form submission for adding a task
         $('#add-task-form').on('submit', function(event) {
-            event.preventDefault(); // Prevent the form from submitting normally
-            var taskName = $('input[name="todo_name"]').val();
+            event.preventDefault();  // Prevent the form from submitting normally
+            var taskName = $('input[name="todo_name"]').val();  // Get the task name
 
             if (taskName.trim() === '') {
                 alert('Task name cannot be empty');
-                return;
+                return;  // Do not proceed if the input is empty
             }
 
+            // Send data using AJAX
             $.ajax({
-                url: '/home',  // Route to add task
+                url: '/home',  // The route to add the task
                 type: 'POST',
-                data: { todo_name: taskName },  // Send form data
+                data: { todo_name: taskName },  // Send task name as form data
                 success: function(response) {
-                    // Append the new task to the task list dynamically
-                    let taskList = response.tasks;  // The updated tasks array returned by Flask
-                    $('#task-list').empty();  // Clear current task list
-                    taskList.forEach(function(task) {
-                        $('#task-list').append(`
-                            <li class="${task.checked ? 'completed' : ''}">
-                                <form action="/checked/${task.id}" method="POST" style="display:inline;">
-                                    <input type="checkbox" onclick="this.form.submit()" ${task.checked ? 'checked' : ''}>
-                                </form>
-                                ${task.name}
-                                <a href="/edit/${task.id}" class="edit-btn">Edit</a>
-                                <form action="/delete/${task.id}" method="POST" style="display:inline;">
-                                    <button type="submit" class="delete-btn">Delete</button>
-                                </form>
-                            </li>
-                        `);
-                    });
-                    $('input[name="todo_name"]').val('');  // Clear input field after adding task
+                    if (response.error) {
+                        alert(response.error);  // Display any error returned from Flask
+                    } else {
+                        // Clear the input field after adding the task
+                        $('input[name="todo_name"]').val('');
+                        
+                        // Dynamically update the task list on the page
+                        let taskList = response.tasks;  // Updated tasks list from the response
+                        $('#task-list').empty();  // Clear existing tasks
+                        taskList.forEach(function(task) {
+                            $('#task-list').append(`
+                                <li class="${task.checked ? 'completed' : ''}">
+                                    <form action="/checked/${task.id}" method="POST" style="display:inline;">
+                                        <input type="checkbox" onclick="this.form.submit()" ${task.checked ? 'checked' : ''}>
+                                    </form>
+                                    ${task.name}
+                                    <a href="/edit/${task.id}" class="edit-btn">Edit</a>
+                                    <form action="/delete/${task.id}" method="POST" style="display:inline;">
+                                        <button type="submit" class="delete-btn">Delete</button>
+                                    </form>
+                                </li>
+                            `);
+                        });
+                    }
                 },
                 error: function(xhr, status, error) {
-                    alert('Error adding task: ' + error);  // Display the error message
+                    alert('Error adding task: ' + error);  // Show error message if request fails
                 }
             });
         });
