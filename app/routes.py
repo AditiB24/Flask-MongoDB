@@ -1,56 +1,63 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for
 from app.models import create_todo, get_todos, update_task, delete_task, delete_all_tasks
 
-# Blueprint for To-Do routes
 todo_bp = Blueprint('todo_bp', __name__)
 
-# Route to add a new To-Do task
-@todo_bp.route('/todo', methods=['POST'])
+# Home Route to Display the Index Page with the List of Tasks
+@todo_bp.route('/home', methods=['GET'])
+def home():
+    # Fetch all tasks from the database
+    tasks = get_todos()
+    task_list = [{'id': task[0], 'name': task[1], 'checked': task[2]} for task in tasks]
+    return render_template('index.html', items=task_list)
+
+# Route to Add a New To-Do Task
+@todo_bp.route('/home', methods=['POST'])
 def add_task():
-    task_data = request.json
-    task = task_data.get('task', '')  # Get the 'task' from the request JSON
-
-    if not task:  # Check if task is empty or not provided
-        return jsonify({'error': 'Task is required'}), 400
-
+    task_name = request.form.get('todo_name')
+    
+    if not task_name:
+        return redirect(url_for('todo_bp.home'))  # Redirect back if no task name
+    
     # Insert the new task into PostgreSQL using psycopg2
-    create_todo(task, False)  # 'False' for completed as default
-    return jsonify({'task': task, 'completed': False}), 201  # Return the added task details
+    create_todo(task_name, False)  # 'False' for completed as default
+    return redirect(url_for('todo_bp.home'))  # Redirect to the home page after adding
 
+# Route to Mark a Task as Checked (Completed)
+@todo_bp.route('/checked/<int:task_id>', methods=['POST'])
+def check_task(task_id):
+    # You should implement a function to mark a task as completed in your database
+    task = get_todos()  # Assuming this function gets all tasks, you need to implement the logic for updating completion status.
+    update_task(task_id, task[0][1])  # Example: This might require changing logic
+    return redirect(url_for('todo_bp.home'))
 
-# Route to display all To-Do tasks
-@todo_bp.route('/todos', methods=['GET'])
-def get_tasks():
-    tasks = get_todos()  # Get all tasks from PostgreSQL
-    task_list = [{'id': task[0], 'task': task[1], 'completed': task[2]} for task in tasks]  # Format the data
-    return jsonify(task_list)  # Return list of tasks
+# Route to Edit a Task (Show Edit Page)
+@todo_bp.route('/edit/<int:task_id>', methods=['GET'])
+def edit_task(task_id):
+    task = get_todos()  # Fetch the task by task_id
+    task_to_edit = next((t for t in task if t[0] == task_id), None)
+    return render_template('edit.html', task=task_to_edit)
 
-
-# Route to edit a particular To-Do task
-@todo_bp.route('/todo/<int:task_id>', methods=['PUT'])
+# Route to Update the Task
+@todo_bp.route('/edit/<int:task_id>', methods=['POST'])
 def update_task_route(task_id):
-    task_data = request.json
-    task = task_data.get('task', '')  # Get the updated task description
+    task_name = request.form.get('todo_name')
+    if not task_name:
+        return redirect(url_for('todo_bp.home'))  # Redirect if no task name
+    
+    update_task(task_id, task_name)
+    return redirect(url_for('todo_bp.home'))  # Redirect back to home page
 
-    if not task:  # If no task is provided
-        return jsonify({'error': 'Task is required'}), 400
-
-    # Update the task in PostgreSQL
-    update_task(task_id, task)
-    return jsonify({'id': task_id, 'task': task})  # Return updated task
-
-
-# Route to delete a particular To-Do task
-@todo_bp.route('/todo/<int:task_id>', methods=['DELETE'])
+# Route to Delete a Task
+@todo_bp.route('/delete/<int:task_id>', methods=['POST'])
 def delete_task_route(task_id):
     # Delete the task from PostgreSQL
     delete_task(task_id)
-    return jsonify({'message': 'Task deleted successfully'})  # Success message
+    return redirect(url_for('todo_bp.home'))  # Redirect back to home page
 
-
-# Route to delete all To-Do tasks
+# Route to Delete All Tasks (optional)
 @todo_bp.route('/todos', methods=['DELETE'])
 def delete_all_tasks_route():
     # Delete all tasks from PostgreSQL
     delete_all_tasks()
-    return jsonify({'message': 'All tasks deleted successfully'})  # Success message
+    return redirect(url_for('todo_bp.home'))  # Redirect to home after deleting all tasks
