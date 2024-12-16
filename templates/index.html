@@ -34,8 +34,51 @@
             {% endfor %}
         </ul>
     </div>
+<script>
+    $(document).ready(function() {
+        // Add Task using AJAX
+        $('#add-task-form').on('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+            var taskName = $('input[name="todo_name"]').val();
 
-    <script>
+            if (taskName.trim() === '') {
+                alert('Task name cannot be empty');
+                return;
+            }
+
+            $.ajax({
+                url: '/home',  // Route to add task
+                type: 'POST',
+                data: { todo_name: taskName },  // Send form data
+                success: function(response) {
+                    // Append the new task to the task list dynamically
+                    let taskList = response.tasks;  // The updated tasks array returned by Flask
+                    $('#task-list').empty();  // Clear current task list
+                    taskList.forEach(function(task) {
+                        $('#task-list').append(`
+                            <li class="${task.checked ? 'completed' : ''}">
+                                <form action="/checked/${task.id}" method="POST" style="display:inline;">
+                                    <input type="checkbox" onclick="this.form.submit()" ${task.checked ? 'checked' : ''}>
+                                </form>
+                                ${task.name}
+                                <a href="/edit/${task.id}" class="edit-btn">Edit</a>
+                                <form action="/delete/${task.id}" method="POST" style="display:inline;">
+                                    <button type="submit" class="delete-btn">Delete</button>
+                                </form>
+                            </li>
+                        `);
+                    });
+                    $('input[name="todo_name"]').val('');  // Clear input field after adding task
+                },
+                error: function(xhr, status, error) {
+                    alert('Error adding task: ' + error);  // Display the error message
+                }
+            });
+        });
+    });
+</script>
+
+<!--     <script>
         $(document).ready(function() {
             // Add Task using AJAX
             $('#add-task-form').on('submit', function(event) {
@@ -57,7 +100,7 @@
                 });
             });
         });
-    </script>
+    </script> -->
 </body>
 </html>
 
@@ -96,8 +139,7 @@
                 </li>
             {% endfor %}
         </ul> -->
-    </div>
+<!--     </div>
  -->
-</body>
-</html>
- -->
+<!-- </body>
+</html> -->
